@@ -3,6 +3,10 @@ import sys
 from os import path
 from datetime import datetime, timedelta
 from subprocess import call,Popen
+import os
+import os.path
+from paramiko import SSHClient
+from scp import SCPClient
 
 #script,source,dest,bkpfname = sys.argv
 #print sys.argv
@@ -29,13 +33,17 @@ from subprocess import call,Popen
 #print path.abspath("hi.py")
 
 ################################################################################
+#script returns the Date in given format.... You can even add/subtract Days/Hours/Minutes
+#usage customdatetime("datef ormat",DaysToAdd_sub,HoursToAdd_sub,MinutesToAdd_sub)
 def customdatetime(formatd, addday, addhour, addminutes):
     customdate = datetime.now() + timedelta(days = addday, hours = addhour, minutes = addminutes)
     return customdate.strftime(formatd)
 #print customdatetime("%Y_%m_%d %H:%M",0,0,0)
 ################################################################################
 
-##############  Backup scripts  ################################################
+############## Backup script ################################################
+#Takes the backup as Tar.gz
+#Usage : custombkp("SourceDir/File","BackupDir",Tarfilename)
 def custombkp(source, dest, bkpfname):
     try:
         bkpDT = customdatetime("%d%b%Y_%H:%M",0,0,0)
@@ -46,8 +54,47 @@ def custombkp(source, dest, bkpfname):
             print "\n\n#################### The backup is completed ####################"
             quit()
     except Exception as exception:
-        print "\n\n#################### ERROR : EXCEPTION ####################\n\n%r\n", exception
+        print "\n\n#################### ERROR : EXCEPTION ####################\n%r\n", exception
     finally:
         quit("\n\n#################### The Script ended ####################\n")
 #custombkp(".py/joomla","./bkp","test")
+################################################################################
+
+################################################################################
+#this script returns all the component of a Path mentioned i.e DIR/Filename/seperator
+#usagesplitAll("path/to/something")
+def splitAll(path):
+   parent, name = os.path.split(path)
+   if name == '':
+       return (parent, )
+   else:
+       return splitAll(parent) + (name,)
+
+print splitAll('/home/user/Work/text.txt')
+################################################################################
+
+
+
+################################################################################
+import paramiko
+client=paramiko.SSHClient()
+client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+com="ls ~/desktop"
+client.connect('MyIPAddress',MyPortNumber, username='username', password='password')
+output=""
+stdin, stdout, stderr = client.exec_command(com)
+
+print "ssh succuessful. Closing connection"
+stdout=stdout.readlines()
+client.close()
+print "Connection closed"
+
+print stdout
+print com
+for line in stdout:
+    output=output+line
+if output!="":
+    print output
+else:
+    print "There was no output for this command"
 ################################################################################
