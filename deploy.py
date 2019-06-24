@@ -57,7 +57,7 @@ def deploy(ip):
     if ssh_stderr:
         sys.stderr.write(ssh_stderr.read())
 
-IPList = ['172.16.2.115']
+IPList = ['IP1','IP2'...'IPN']
 
 for IP in IPList:
     deploy(IP)
