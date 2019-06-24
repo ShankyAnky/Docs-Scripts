@@ -18,11 +18,11 @@ def deploy(ip):
 
     bkpDT = customdatetime("%d%b%Y_%H%M",0,0,0)
     app_path = "%s" %(str(sys.argv[1]))
-    bkp_path = "/home/tejora/Downloads/py/tarbkp/%s_Bkp.tar.gz" %(bkpDT)
+    bkp_path = "/home/USER/Downloads/py/tarbkp/%s_Bkp.tar.gz" %(bkpDT)
     filename = path.basename(bkp_path)
     params = "-zcvf"
     SSH_PASSWORD = SSH_USERNAME = "tejora"
-    Remote_tar_path = "/home/tejora/dinesh/bkptar"
+    Remote_tar_path = "/home/USER/test/bkptar"
 #    script_path = os.getcwd()
 
     print "Filename : %r " % (filename)
