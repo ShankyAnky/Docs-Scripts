@@ -12,24 +12,24 @@ from scp import SCPClient
 #print sys.argv
 #quit("wow")
 
-#if path.exists("/home/tejora/Downloads/py"):
+#if path.exists("/home/{USER}/Downloads/py"):
     #print "ya"
 #
-#if path.isfile("/home/tejora/Downloads/py/hi.txt"):
+#if path.isfile("/home/{USER}/Downloads/py/hi.txt"):
     #print "yo"
 #else:
     #print "no"
 #
-#if path.isdir("/home/tejora/Downloads/py/"):
+#if path.isdir("/home/{USER}/Downloads/py/"):
     #print "true"
 #else:
     #print "false"
 #
-#split = path.split("/home/tejora/Downloads/py/hi.txt")
+#split = path.split("/home/{USER}/Downloads/py/hi.txt")
 #for splits in split:
     #print splits
 #
-#print path.realpath("hi.py") #> /home/tejora/Downloads/py/hi.txt path from root
+#print path.realpath("hi.py") #> /home/{USER}/Downloads/py/hi.txt path from root
 #print path.abspath("hi.py")
 
 ################################################################################
