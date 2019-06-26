@@ -1,4 +1,5 @@
 ################################ JENKINS #######################################
+
 sudo apt update
 sudo apt install openjdk-8-jdk
 wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
@@ -14,6 +15,7 @@ sudo ufw status
 sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 
 ################################ MAVEN #########################################
+
 #APT : 
 
 sudo apt update
