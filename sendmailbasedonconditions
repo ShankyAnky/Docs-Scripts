@@ -1,0 +1,113 @@
+#!/usr/bin/python
+
+"""The first step is to create an SMTP object, each object is used for connection
+with one server."""
+
+import smtplib
+from email.MIMEMultipart import MIMEMultipart
+from email.MIMEText import MIMEText
+from email.MIMEBase import MIMEBase
+from email import encoders
+import datetime
+import subprocess
+import mysql.connector
+
+### Create CSV File ###
+
+d = datetime.datetime.today().strftime("%d_%b_%Y_%H:%M")
+mydb = mysql.connector.connect(
+  host="localhost",
+  port="6533",
+  user="admin",
+  passwd="Admin@123",
+  database="myDB"
+)
+
+## To Find Total Count
+mycursor_link = mydb.cursor()
+cmdQuery = "SELECT count(*) FROM popup_data where i_agree=1 and template = 1;"
+cmdpq = str(cmdQuery)
+mycursor_link.execute(cmdpq)
+
+myresult = mycursor_link.fetchone()
+
+for x in myresult:
+  totalcount1 = x
+
+## To Find Total Count
+mycursor_link = mydb.cursor()
+cmdQuery = "SELECT count(*) FROM popup_data where i_agree=1 and template = 2;"
+cmdpq = str(cmdQuery)
+mycursor_link.execute(cmdpq)
+
+myresult = mycursor_link.fetchone()
+
+for x in myresult:
+  totalcount2 = x
+
+mycursor = mydb.cursor()
+cmd = "SELECT 'Ent ID', 'Request From', 'Date' UNION ALL SELECT ent_id, request_from, updated_dt FROM popup_data where i_agree=1 and template = 1 and updated_dt > NOW() - INTERVAL 3 DAY INTO OUTFILE '/Database/data/CSV_Data/%s-BrokeragePlan_above_75k_Agree.csv'    FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"'   LINES TERMINATED BY '\n';" % (d)
+cmdp = str(cmd)
+mycursor.execute(cmdp)
+
+
+### Send attached File ###
+
+attach_file = "/Database/data/CSV_Data/%s-BrokeragePlan_above_75k_Agree.csv" %d
+attach1 = str(attach_file)
+
+mycursor = mydb.cursor()
+cmd = "SELECT 'Ent ID', 'Request From', 'Date' UNION ALL SELECT ent_id, request_from, updated_dt FROM popup_data where i_agree=1 and template = 2 and updated_dt > NOW() - INTERVAL 3 DAY INTO OUTFILE '/Database/data/CSV_Data/%s-BrokeragePlan_betwn_60-75K_Agree.csv'    FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"'   LINES TERMINATED BY '\n';" % (d)
+cmdp = str(cmd)
+mycursor.execute(cmdp)
+
+
+### Send attached File ###
+
+attach_file2 = "/Database/data/CSV_Data/%s-BrokeragePlan_betwn_60-75K_Agree.csv" %d
+attach2 = str(attach_file2)
+
+
+fromaddr = "ght@gmail.com"
+
+toaddr = ['abc@gmail.com','def@gmail.com', 'ghi@gmail.com']
+cc = ['abc@gmail.com', 'ghi@gmail.com']
+
+
+toaddrs = toaddr + cc
+
+msg = MIMEMultipart()
+
+msg['From'] = fromaddr
+msg['To'] = ", ".join(toaddr)
+msg['Cc'] = ", ".join(cc)
+msg['Subject'] = "Bla bla on %s" %d
+
+body = "Dear Team,\n\nHello Hello : %s \n\nTotal girlies : %s " % (totalcount1,totalcount2)
+
+msg.attach(MIMEText(body, 'plain'))
+
+filename1 = "%s-BrokeragePlan_above_75k_Agree.csv" %d
+attachment1 = open(attach1, "rb")
+
+part = MIMEBase('application', 'octet-stream')
+part.set_payload((attachment1).read())
+encoders.encode_base64(part)
+part.add_header('Content-Disposition', "attachment; filename= %s" % filename1)
+msg.attach(part)
+
+filename2 = "%s-BrokeragePlan_betwn_60-75K_Agree.csv" %d
+attachment2 = open(attach2, "rb")
+
+part = MIMEBase('application', 'octet-stream')
+part.set_payload((attachment2).read())
+encoders.encode_base64(part)
+part.add_header('Content-Disposition', "attachment; filename= %s" % filename2)
+msg.attach(part)
+
+server = smtplib.SMTP('192.168.102.72:2525')
+server.ehlo()
+text = msg.as_string()
+server.sendmail(fromaddr, toaddrs, text)
+#server.sendmail(msg['From'], ['To', 'Cc'], text)
+server.quit()
